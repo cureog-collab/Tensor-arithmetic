@@ -1,8 +1,7 @@
 #include "../include/main.h"
-#include <math.h>
 #include <stdlib.h>
 
-void matrixMultiply(tensor *result, const double *data1, const double *data2, int M, int K, int N, int batch);
+void matrixMultiplyCore(tensor *result, const double *data1, const double *data2, int M, int K, int N, int batch);
 
 tensor *tensorTranspose(const tensor *ten, const int *axes)
 {
@@ -132,7 +131,7 @@ tensor *tensorMultiply(const tensor *ten1, const tensor *ten2)
         free(resultShape);
         tensorFillZEROS(result);
 
-        matrixMultiply(result, ten1->data, ten2->data, firstRows, firstCols, secondCols, 0);
+        matrixMultiplyCore(result, ten1->data, ten2->data, firstRows, firstCols, secondCols, 0);
         return result;
     }
 
@@ -193,42 +192,67 @@ tensor *tensorMultiply(const tensor *ten1, const tensor *ten2)
     // multiply each pair of matrices
     for (int b = 0; b < totBatches; ++b)
     {
-        matrixMultiply(result, ten1->data, ten2->data, firstRows, firstCols, secondCols, b);
+        matrixMultiplyCore(result, ten1->data, ten2->data, firstRows, firstCols, secondCols, b);
     }
     return result;
 }
 
-// double matrixDet(const tensor *mat)
-// {
-//     // check if the inputs are actual matrices
-//     int dim = mat->dimensions;
-//     if (dim != 2)
-//     {
-//         printf("Error: Input is not a matrix but a rank-%i tensor!\n", dim);
-//         return NAN;
-//     }
+double matrixDet(const tensor *mat)
+{
+    // check if the inputs is an actual matrix
+    int dim = mat->dimensions;
+    if (dim != 2)
+    {
+        printf("Error: Input is not a matrix but a rank-%i tensor!\n", dim);
+        return NAN;
+    }
     
-//     // check if the input is a square matrix
-//     if (mat->shape[0] != mat->shape[1])
-//     {
-//         printf("Error: Input isn't a square matri but a %ix%i one!\n", mat->shape[0], mat->shape[1]);
-//         return NAN;
-//     }
+    // check if the input is a square matrix
+    if (mat->shape[0] != mat->shape[1])
+    {
+        printf("Error: Input isn't a square matrix but a %ix%i one!\n", mat->shape[0], mat->shape[1]);
+        return NAN;
+    }
 
-//     tensor *cloneMat = copyTensor(mat);
-//     if (cloneMat == NULL)
-//     {
-//         printf("Error: Failed to clone input tensor!\n");
-//         return NAN;
-//     }
+    tensor *cloneMat = copyTensor(mat);
+    if (cloneMat == NULL)
+    {
+        printf("Error: Failed to clone input tensor!\n");
+        return NAN;
+    }
+
+    // this is for handling the effect of swapping rows when performing Gaussian elimination
+    int swapSign = 1;
     
-//     gaussianElimination(cloneMat, 0, 0);
-// }
+    // gaussian eliminationt
+    gaussianElimination(cloneMat, 0, 0, &swapSign);
+
+    // mutliply pivots to get the determinant
+    double determinant = 1;
+    int maxRowIdx = cloneMat->shape[0];
+    int maxColIdx = cloneMat->shape[1];
+    for (int rowIdx = 0; rowIdx < maxRowIdx; ++rowIdx)
+    {
+        // if the current matrix element is 0, return 0
+        double elementValue = *(cloneMat->data + rowIdx * (maxColIdx + 1));
+        if (elementValue == 0)
+        {
+            destroyTensor(cloneMat);
+            return 0;
+        }
+
+        determinant *= elementValue;
+    }
+    determinant *= swapSign;
+
+    destroyTensor(cloneMat);
+    return  determinant;
+}
 
 
 
 // helper
-void matrixMultiply(tensor *result, const double *data1, const double *data2, int M, int K, int N, int batch)
+void matrixMultiplyCore(tensor *result, const double *data1, const double *data2, int M, int K, int N, int batch)
 {
     // offset
     int offsetFirst = batch * M * K; // batch * size of the first matrix

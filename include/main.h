@@ -54,7 +54,7 @@ tensor *tensorSumByAxis(const tensor *ten, int axis);
 
 tensor *tensorReshape(const tensor *ten, int *newShape, int newDim);
 tensor *tensorFlatten(const tensor *ten);
-void gaussianElimination(tensor *mat, int entryRowIdx, int entryColIdx);
+void gaussianElimination(tensor *mat, int entryRowIdx, int entryColIdx, int *swapSign);
 // =========================================================================================================
 
 #endif

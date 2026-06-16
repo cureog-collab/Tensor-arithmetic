@@ -18,7 +18,7 @@ tensor *tensorReshape(const tensor *ten, int *newShape, int newDim)
 
     if (result->size != ten->size)
     {
-        printf("Error: Dissimilar size!\nInput tensor has size %i while new tensor has size %i", ten->size, result->size);
+        printf("Error: Dissimilar size!\nInput tensor has size %i while new tensor has size %i\n", ten->size, result->size);
         destroyTensor(result);
         return NULL;
     }
@@ -50,7 +50,7 @@ tensor *tensorFlatten(const tensor *ten)
 }
 
 // Gaussian elimination for MxN matrix
-void gaussianElimination(tensor *mat, int entryRowIdx, int entryColIdx)
+static void gaussianEliminationCore(tensor *mat, int entryRowIdx, int entryColIdx, int *swapSign)
 {
     // static const int DOUBLE_SIZE = sizeof(double);
     // 0. base case: entryRow == mat->shape[0] - 1 || entryCol == mat->shape[1] - 1
@@ -60,7 +60,7 @@ void gaussianElimination(tensor *mat, int entryRowIdx, int entryColIdx)
     {
         return;
     }
-    int matCols = mat->shape[1];
+    int matCols = maxColIdx;
 
     // 1. search down in the entry col, find the row i which will give
     //    maximum entry.
@@ -79,6 +79,7 @@ void gaussianElimination(tensor *mat, int entryRowIdx, int entryColIdx)
     // 2. swap that mat[entryRow] with mat[i] (if i != entryRow)
     if (rowIdxWithMaxVal != entryRowIdx)
     {
+        *swapSign = -*swapSign;
         for (int colIdx = entryColIdx; colIdx < maxColIdx; ++colIdx)
         {
             double tempVal = *(mat->data + entryRowIdx * matCols + colIdx);
@@ -108,6 +109,18 @@ void gaussianElimination(tensor *mat, int entryRowIdx, int entryColIdx)
     }
 
     // 4. move to the next pivot and recursive
-    gaussianElimination(mat, entryRowIdx + 1, entryColIdx + 1);
+    gaussianEliminationCore(mat, entryRowIdx + 1, entryColIdx + 1, swapSign);
     return;
+}
+
+void gaussianElimination(tensor *mat, int entryRowIdx, int entryColIdx, int *swapSign)
+{
+    // dummy address on stack
+    int dummy = 1;
+
+    // check if the user wants to store the sign of the elimination
+    swapSign = (swapSign == NULL)? &dummy : swapSign;
+
+    // call the actual process
+    gaussianEliminationCore(mat, entryRowIdx, entryColIdx, swapSign);
 }
