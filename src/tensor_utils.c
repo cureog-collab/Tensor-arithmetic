@@ -1,5 +1,4 @@
 #include "../include/main.h"
-#include <string.h>
 
 tensor *tensorReshape(const tensor *ten, int *newShape, int newDim)
 {

@@ -1,5 +1,4 @@
 #include "../include/main.h"
-#include <math.h>
 
 void tensorScale(tensor *ten, double scalar)
 {
@@ -116,6 +115,7 @@ tensor *tensorAdd(const tensor *ten1, const tensor *ten2, bool isAdd)
     return result;
 }
 
+// may or may not implement in the future
 tensor *tensorAddBias(const tensor *ten, const tensor *bias);
 
 tensor *tensorDivide(const tensor *ten1, const tensor *ten2)

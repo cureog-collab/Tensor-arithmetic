@@ -78,9 +78,9 @@ void gaussianElimination(tensor *mat, int entryRowIdx, int entryColIdx, int *swa
 // =========================================================================================================
 double tensorSum(const tensor *ten);
 double tensorMean(const tensor *ten);
-tensor *tensorSumByAxis(const tensor *ten, int axis); // TODO
-tensor *tensorMaxByAxis(const tensor *ten, int axis); // TODO
-tensor *tensorArgmax(const tensor *ten, int axis);    // TODO
+tensor *tensorSumByAxis(const tensor *ten, int axis);
+tensor *tensorMaxByAxis(const tensor *ten, int axis);
+tensor *tensorArgmax(const tensor *ten, int axis);
 
 // =========================================================================================================
 // SHAPE MORPHING

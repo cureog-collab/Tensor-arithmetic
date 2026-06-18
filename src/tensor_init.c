@@ -1,6 +1,4 @@
 #include "../include/main.h"
-#include <stdlib.h>
-#include <string.h>
 
 double genNormalRandom(double mean, double sigma);
 
