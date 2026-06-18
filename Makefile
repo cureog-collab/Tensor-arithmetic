@@ -1,30 +1,32 @@
 CC = gcc
-
 CFLAGS = -Wall -Wextra -I./include -O3 -MMD -MP
-LDFLAGS = -lm
+AR = ar
+ARFLAGS = rcs
 
 SRC_DIR = src
 OBJ_DIR = obj
-BUILD_DIR = build
+LIB_DIR = lib
 
-TARGET = $(BUILD_DIR)/tensor-maths
-
-SRC = $(SRC_DIR)/main.c $(SRC_DIR)/tensor_elementwise.c $(SRC_DIR)/tensor_loss.c $(SRC_DIR)/tensor_init.c $(SRC_DIR)/tensor_linearAlg.c $(SRC_DIR)/tensor_reduction.c $(SRC_DIR)/tensor_utils.c
-OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC))
+SRCS = $(wildcard $(SRC_DIR)/*.c)
+OBJS = $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRCS))
 DEPS = $(OBJS:.o=.d)
 
-all: $(TARGET)
+STATIC_LIB = $(LIB_DIR)/libtenCor.a
 
-$(TARGET): $(OBJS) | $(BUILD_DIR)
-	$(CC) $(OBJS) -o $(TARGET) $(LDFLAGS)
+all: dirs $(STATIC_LIB)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+dirs:
+	@mkdir -p $(OBJ_DIR) $(LIB_DIR)
+
+$(STATIC_LIB): $(OBJS)
+	$(AR) $(ARFLAGS) $@ $^
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(BUILD_DIR) $(OBJ_DIR):
-	mkdir -p $@
-
 clean:
-	rm -rf $(OBJ_DIR) $(BUILD_DIR)
+	rm -rf $(OBJ_DIR) $(LIB_DIR)
 
 -include $(DEPS)
+
+.PHONY: all dirs clean

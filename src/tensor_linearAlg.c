@@ -1,4 +1,4 @@
-#include "../include/main.h"
+#include "../include/tenCor.h"
 
 void matrixMultiplyCore(tensor *result, const double *data1, const double *data2, int M, int K, int N, int batch, bool trans1, bool trans2);
 static void gaussianEliminationCore(tensor *mat, int entryRowIdx, int entryColIdx, int *swapSign);

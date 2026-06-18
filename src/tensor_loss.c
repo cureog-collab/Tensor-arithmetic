@@ -1,5 +1,4 @@
-#include "../include/main.h"
-#include <math.h>
+#include "../include/tenCor.h"
 
 double tensorMSE(const tensor *predictions, const tensor *labels)
 {

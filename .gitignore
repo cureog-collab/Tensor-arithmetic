@@ -1,7 +1,7 @@
 c_tensor
 tensor-mathematics
 *.o
-src/main.c
-build/
+tests/
 obj/
+lib/
 .DS_Store

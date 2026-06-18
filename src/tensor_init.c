@@ -1,4 +1,4 @@
-#include "../include/main.h"
+#include "../include/tenCor.h"
 
 double genNormalRandom(double mean, double sigma);
 

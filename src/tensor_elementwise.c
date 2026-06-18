@@ -1,6 +1,4 @@
-#include "../include/main.h"
-#include <math.h>
-#include <threads.h>
+#include "../include/tenCor.h"
 
 void tensorScale(tensor *ten, double scalar)
 {
