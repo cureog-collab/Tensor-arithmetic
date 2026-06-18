@@ -1,4 +1,6 @@
 #include "../include/main.h"
+#include <math.h>
+#include <threads.h>
 
 void tensorScale(tensor *ten, double scalar)
 {
@@ -392,6 +394,79 @@ tensor *tensorTanhDerivative(const tensor *ten)
     {
         double value = ten->data[i];
         result->data[i] = 1.0 - value * value;
+    }
+
+    return result;
+}
+
+tensor *tensorSoftmax(const tensor *ten, int axis)
+{
+    if (ten == NULL)
+    {
+        printf("Error: Input tensor is NULL!\n");
+        return NULL;
+    }
+
+    if (axis < 0 || axis >= ten->dimensions)
+    {
+        printf("Error: Axis %i is not a valid axis!\n", axis);
+        return NULL;
+    }
+
+    int dims = ten->dimensions;
+
+    tensor *result = createTensor(dims, ten->shape);
+    if (result == NULL)
+    {
+        printf("Error: Failed to create result tensor!\n");
+        return NULL;
+    }
+
+    // find sizes to later detect elements on axis
+    int axisSize = ten->shape[axis];
+    int innerSize = 1;
+    for (int d = axis + 1; d < dims; ++d)
+    {
+        innerSize *= ten->shape[d];
+    }
+    int outerSize = ten->size / (axisSize * innerSize);
+
+    // jump through outer axes
+    for (int i = 0; i < outerSize; ++i)
+    {
+        // jump though inner axes
+        for (int j = 0; j < innerSize; ++j)
+        {
+            int baseIdx = i * axisSize * innerSize + j;
+
+            // first loop inside axis: find maxVal
+            double maxVal = ten->data[baseIdx];
+            for (int k = 1; k < axisSize; ++k)
+            {
+                int currIdx = baseIdx + k * innerSize;
+                maxVal = (ten->data[currIdx] > maxVal) ? ten->data[currIdx] : maxVal;
+            }
+
+            // second loop inside axis: compute exp(value - maxVal) & compute sum of all exp(value - maxVal)
+            double partitionFuncion = 0.0;
+            for (int k = 0; k < axisSize; ++k)
+            {
+                int currIdx = baseIdx + k * innerSize;
+
+                // temporarily store into result->data
+                double temp = exp(ten->data[currIdx] - maxVal);
+                result->data[currIdx] = temp;
+                partitionFuncion += temp;
+            }
+
+            // third loop inside axis: c
+            double invZ = 1.0 / partitionFuncion;
+            for (int k = 0; k < axisSize; ++k)
+            {
+                int currIdx = baseIdx + k * innerSize;
+                result->data[currIdx] *= invZ;
+            }
+        }
     }
 
     return result;

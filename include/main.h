@@ -9,7 +9,7 @@
 #include <string.h>
 #include <time.h>
 
-#define EPSILON 1E-9
+#define EPSILON 1E-10
 
 typedef struct {
     double *data;
@@ -47,7 +47,7 @@ tensor *tensorDivide(const tensor *ten1, const tensor *ten2);
 tensor *tensorRelu(const tensor *ten);
 tensor *tensorSigmoid(const tensor *ten);
 tensor *tensorTanh(const tensor *ten);
-tensor *tensorSoftmax(const tensor *ten, int axis); // TODO
+tensor *tensorSoftmax(const tensor *ten, int axis);
 
 bool checkShapeSim(const tensor *ten1, const tensor *ten2);
 
