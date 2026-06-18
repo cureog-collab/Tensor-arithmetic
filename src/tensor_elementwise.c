@@ -117,8 +117,52 @@ tensor *tensorAdd(const tensor *ten1, const tensor *ten2, bool isAdd)
     return result;
 }
 
-// may or may not implement in the future
-tensor *tensorAddBias(const tensor *ten, const tensor *bias);
+tensor *tensorAddBias(const tensor *ten, const tensor *bias)
+{
+    if (ten == NULL || bias == NULL)
+    {
+        printf("Error: Cannot perform tensorAddBias with NULL!\n");
+        return NULL;
+    }
+    else if (bias->dimensions != 1)
+    {
+        printf("Error: Bias must be a vector (currently it is a rank-%i tensor).", bias->dimensions);
+        return NULL;
+    }
+    else if (bias->shape[0] != ten->shape[ten->dimensions - 1])
+    {
+        printf("Error: Last dimensions of input tensor and bias vector must have the same number of elements!\n");
+        return NULL;
+    }
+
+    tensor *result = createTensor(ten->dimensions, ten->shape);
+    if (result == NULL)
+    {
+        printf("Error: Failed to create result tensor!\n");
+        return NULL;
+    }
+
+    int tenSize = ten->size;
+    int biasSize = bias->size;
+
+    // divide the 1D RAM data into contiguous blocks of biasSize
+    int numBlocks = tenSize / biasSize;
+
+    // jump into each block
+    for (int blockIdx = 0; blockIdx < numBlocks; ++blockIdx)
+    {
+        // address of the block
+        int blockOffset = blockIdx * biasSize;
+
+        // loop inside that block
+        for (int i = 0; i < biasSize; ++i)
+        {
+            *(result->data + blockOffset + i) = *(ten->data + blockOffset + i) + *(bias->data + i);
+        }
+    }
+
+    return result;
+}
 
 tensor *tensorDivide(const tensor *ten1, const tensor *ten2)
 {

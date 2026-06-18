@@ -2,7 +2,6 @@
 #define MAIN_H
 
 #include <math.h>
-#include <float.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,7 +39,7 @@ void tensorRandomNormal(tensor *ten, double mean, double sigma);
 // =========================================================================================================
 void tensorScale(tensor *ten, double scalar);
 tensor *tensorAdd(const tensor *ten1, const tensor *ten2, bool isAdd);
-tensor *tensorAddBias(const tensor *ten, const tensor *bias); // idk if I should implement this
+tensor *tensorAddBias(const tensor *ten, const tensor *bias);
 tensor *tensorHadamardProduct(const tensor *ten1, const tensor *ten2);
 tensor *tensorDivide(const tensor *ten1, const tensor *ten2);
 
@@ -61,8 +60,8 @@ tensor *tensorTanhDerivative(const tensor *ten);
 // =========================================================================================================
 // LOSS FUNCTIONS
 // =========================================================================================================
-double tensorMSE(const tensor *predictions, const tensor *labels); // TODO
-double tensorCrossEntropy(const tensor *predictions, const tensor *labels); // TODO
+double tensorMSE(const tensor *predictions, const tensor *labels);
+double tensorCrossEntropy(const tensor *predictions, const tensor *labels);
 
 // =========================================================================================================
 // LINEAR ALGEBRA CORE
