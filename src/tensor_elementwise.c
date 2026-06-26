@@ -163,6 +163,33 @@ tensor *tensorAddBias(const tensor *ten, const tensor *bias)
     return result;
 }
 
+tensor *tensorAddScalar(const tensor *ten, double scalar)
+{
+    if (ten == NULL)
+    {
+        printf("Error: Cannot add to NULL!\n");
+        return NULL;
+    }
+    int dims = ten->dimensions;
+    tensor *result = createTensor(dims, ten->shape);
+    if (result == NULL)
+    {
+        printf("Error: Failed to create result tensor!\n");
+        return NULL;
+    }
+
+    int tenSize = ten->size;
+    double *resultDataPtr = result->data;
+    double *srcDataPtr = ten->data;
+
+    for (int i = 0; i < tenSize; ++i)
+    {
+        resultDataPtr[i] = srcDataPtr[i] + scalar;
+    }
+
+    return result;
+}
+
 tensor *tensorDivide(const tensor *ten1, const tensor *ten2)
 {
     int dims1 = ten1->dimensions;
