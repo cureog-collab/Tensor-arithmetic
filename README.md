@@ -6,6 +6,8 @@ tenCor is a (hopefully) N-dimensional tensor manipulation and mathematics librar
 To build a low-level computing core as a foundation for a future machine learning project.
 
 ## Directory Structure
+* `lib/`
+  Contains static library `libtenCor.a`.
 * `include/`
   Contains header file `tenCor.h`, defining `struct tensor` data structure and declaring function prototypes.
 * `src/`
